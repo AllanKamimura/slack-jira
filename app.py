@@ -102,6 +102,8 @@ def add_attachments(issue_id, file_paths):
                 auth  = auth,
                 )
 
+        logging.info(f"jira: add attach: {file_path}")
+        
 #### bot functions (todo: create a proper class)
 def is_message_in_thread(event):
     # Check if the message event has the 'thread_ts' attribute
@@ -112,6 +114,8 @@ def download_image(file_url, file_name, thread_ts):
         'Authorization': f'Bearer {SLACK_BOT_TOKEN}',
     }
     response = requests.get(file_url, headers=headers)
+
+    logging.info(f"{file_url}")
 
     if response.status_code == 200:
         
@@ -145,6 +149,8 @@ def check_category(text):
 def check_attachments(main_message, thread_ts):
     files = main_message.get("files", {})
     downloaded_files = []
+
+    logging.info(f"{files}")
 
     for file in files:
         url   = file.get("url_private_download", "")
@@ -219,4 +225,5 @@ def handle_app_mention_events(event, say, logger):
 
 # Start your app
 if __name__ == "__main__":
+    logging.info("app start")
     SocketModeHandler(app, SLACK_APP_TOKEN).start()
