@@ -11,9 +11,9 @@ from urllib.parse import urljoin
 
 BOT_TAG  = "<@U07AANEMT6E>"
 
-JIRA_URL   = os.environ.get('JIRA_URL')
-JIRA_KEY   = os.environ.get('JIRA_KEY')
-JIRA_EMAIL = os.environ.get('JIRA_EMAIL')
+JIRA_URL        = os.environ.get('JIRA_URL')
+JIRA_KEY        = os.environ.get('JIRA_KEY')
+JIRA_EMAIL      = os.environ.get('JIRA_EMAIL')
 SLACK_APP_TOKEN = os.environ.get("SLACK_APP_TOKEN")
 SLACK_BOT_TOKEN = os.environ.get("SLACK_BOT_TOKEN")
 
@@ -103,7 +103,7 @@ def add_attachments(issue_id, file_paths):
                 )
 
         logging.info(f"jira: add attach: {file_path}")
-        
+
 #### bot functions (todo: create a proper class)
 def is_message_in_thread(event):
     # Check if the message event has the 'thread_ts' attribute
@@ -215,12 +215,15 @@ def handle_app_mention_events(event, say, logger):
         downloaded_files = check_attachments(main_message, thread_ts)
         reply_user = get_user(event, main_message)
 
-        issue_key = create_jira_issue(main_text.replace("\n","\n\n"), text, issuetype)
-        #issue_key = "DWC-5266"
+        slack_link = "\n\n" + f"https://toradex.slack.com/archives/{channel}/p{thread_ts.replace('.', '')}"
+        issue_key = create_jira_issue(main_text.replace("\n","\n\n") + slack_link, text, issuetype)
+        # issue_key = "DWC-5266"
         link = f"{JIRA_URL}/browse/{issue_key}"
 
-        say(f"Hi there, <@{reply_user}>!\nThis issue is being tracked at {link}", thread_ts = thread_ts)
-
+        message = f"Hi there, <@{reply_user}>!\nThis issue is being tracked at {link}"
+        say(message, thread_ts = thread_ts)
+        print(message)
+        
         add_attachments(issue_key, downloaded_files)
 
 # Start your app
